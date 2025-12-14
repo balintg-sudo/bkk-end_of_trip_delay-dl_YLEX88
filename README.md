@@ -35,6 +35,12 @@ I have created a configuration file (`src/config.py`) that allows for the fine-t
 * **Linear Regression**
 * **Heuristic Estimator (Naive Baseline):** Takes the current delay and assumes it will be the final delay (i.e., it assumes the vehicle will neither accumulate further delay nor recover time).
 
+**GNN Model:**
+
+The developed architecture is a hybrid Spatiotemporal Graph Neural Network (ST-GNN) based on the fusion of network topology and real-time vehicle dynamics.
+The model's Spatial Branch utilizes a two-layer Graph Convolutional Network (GCN) module. The graph structure is defined by the GTFS static database: nodes represent stops (input features: normalized GPS coordinates), directed edges represent direct scheduled connections, and edge weights correspond to scheduled travel times. The GCN layers generate latent representations of the network nodes (node embeddings) via a message passing mechanism, integrating local and neighborhood information.
+The Dynamic Branch processes an 8-dimensional input vector containing real-time telemetry (current delay, speed, heading) and cyclically transformed timestamps (sin/cos encoding) to handle seasonality.
+
 **Evaluation:**
 
 The models were compared based on the following metrics:
@@ -120,4 +126,5 @@ The repository is structured as follows:
     - `README.md`: Project documentation and instructions.
     - `run.sh`: Run file for Linux
     - `run.ps1`: Run file for Windows
+
 
