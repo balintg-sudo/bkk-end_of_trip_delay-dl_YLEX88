@@ -1,99 +1,62 @@
-# Deep Learning Class (VITMMA19) Project Work template
-
-[Complete the missing parts and delete the instruction parts before uploading.]
-
-## Submission Instructions
-
-[Delete this entire section after reading and following the instructions.]
-
-### Project Levels
-
-**Basic Level (for signature)**
-*   Containerization
-*   Data acquisition and analysis
-*   Data preparation
-*   Baseline (reference) model
-*   Model development
-*   Basic evaluation
-
-**Outstanding Level (aiming for +1 mark)**
-*   Containerization
-*   Data acquisition and analysis
-*   Data cleansing and preparation
-*   Defining evaluation criteria
-*   Baseline (reference) model
-*   Incremental model development
-*   Advanced evaluation
-*   ML as a service (backend) with GUI frontend
-*   Creative ideas, well-developed solutions, and exceptional performance can also earn an extra grade (+1 mark).
-
-### Data Preparation
-
-**Important:** You must provide a script (or at least a precise description) of how to convert the raw database into a format that can be processed by the scripts.
-* The scripts should ideally download the data from there or process it directly from the current sharepoint location.
-* Or if you do partly manual preparation, then it is recommended to upload the prepared data format to a shared folder and access from there.
-
-[Describe the data preparation process here]
-
-### Logging Requirements
-
-The training process must produce a log file that captures the following essential information for grading:
-
-1.  **Configuration**: Print the hyperparameters used (e.g., number of epochs, batch size, learning rate).
-2.  **Data Processing**: Confirm successful data loading and preprocessing steps.
-3.  **Model Architecture**: A summary of the model structure with the number of parameters (trainable and non-trainable).
-4.  **Training Progress**: Log the loss and accuracy (or other relevant metrics) for each epoch.
-5.  **Validation**: Log validation metrics at the end of each epoch or at specified intervals.
-6.  **Final Evaluation**: Result of the evaluation on the test set (e.g., final accuracy, MAE, F1-score, confusion matrix).
-
-The log file must be uploaded to `log/run.log` to the repository. The logs must be easy to understand and self explanatory. 
-Ensure that `src/utils.py` is used to configure the logger so that output is directed to stdout (which Docker captures).
-
-### Submission Checklist
-
-Before submitting your project, ensure you have completed the following steps.
-**Please note that the submission can only be accepted if these minimum requirements are met.**
-
-- [ ] **Project Information**: Filled out the "Project Information" section (Topic, Name, Extra Credit).
-- [ ] **Solution Description**: Provided a clear description of your solution, model, and methodology.
-- [ ] **Extra Credit**: If aiming for +1 mark, filled out the justification section.
-- [ ] **Data Preparation**: Included a script or precise description for data preparation.
-- [ ] **Dependencies**: Updated `requirements.txt` with all necessary packages and specific versions.
-- [ ] **Configuration**: Used `src/config.py` for hyperparameters and paths, contains at least the number of epochs configuration variable.
-- [ ] **Logging**:
-    - [ ] Log uploaded to `log/run.log`
-    - [ ] Log contains: Hyperparameters, Data preparation and loading confirmation, Model architecture, Training metrics (loss/acc per epoch), Validation metrics, Final evaluation results, Inference results.
-- [ ] **Docker**:
-    - [ ] `Dockerfile` is adapted to your project needs.
-    - [ ] Image builds successfully (`docker build -t dl-project .`).
-    - [ ] Container runs successfully with data mounted (`docker run ...`).
-    - [ ] The container executes the full pipeline (preprocessing, training, evaluation).
-- [ ] **Cleanup**:
-    - [ ] Removed unused files.
-    - [ ] **Deleted this "Submission Instructions" section from the README.**
+# Deep Learning Class (VITMMA19) Project Work
 
 ## Project Details
 
 ### Project Information
 
-- **Selected Topic**: [Enter Topic Name Here, options: AnkleAlign, Legal Text Decoder, Bull-flag detector, End-of-trip delay prediction]
-- **Student Name**: [Enter Your Name Here]
-- **Aiming for +1 Mark**: [Yes/No]
+- **Selected Topic**: End-of-trip delay prediction
+- **Student Name**: Bálint Gergely
+- **Aiming for +1 Mark**: No
 
 ### Solution Description
 
-[Provide a short textual description of the solution here. Explain the problem, the model architecture chosen, the training methodology, and the results.]
+The objective of this project is to predict the arrival of BKK vehicles at their final destination. My model incorporates spatial dependencies (the network structure of stops) by constructing a graph where nodes represent stops, edges represent direct connections between stops, and edge weights correspond to the scheduled travel times. Since traditional models often overlook network topology, this solution aims to apply a graph-based approach utilizing GTFS Real-time data.
+
+**Configuration:**
+
+I have created a configuration file (`src/config.py`) that allows for the fine-tuning of the following parameters:
+
+* **DAYS_TO_TRAIN**: The number of days to be used for training data (out of the available 16).
+* **LOW_MEMORY switch**: If set to `True`, the program limits loaded data to 4,000,000 rows, saving significant resources and time.
+    * *IMPORTANT:* If `True`, the model will train on 5 days and test on 1 day.
+* **EPOCHS**: The number of training epochs.
+* **BATCH_SIZE**: The size of the batches.
+* **LEARNING_RATE**: Allows adjustment of the learning rate.
+
+**Workflow:**
+
+1.  The program downloads the raw data from Google Drive.
+2.  It performs data loading and cleaning, then splits the data into Training/Validation and Test sets.
+3.  It trains and evaluates the Baseline Linear Regression model, followed by the GNN.
+4.  As a final step, it evaluates the Regression, the Heuristic baseline estimator, and the GNN on unseen data and outputs the statistics.
+
+**Baseline Models:**
+
+* **Linear Regression**
+* **Heuristic Estimator (Naive Baseline):** Takes the current delay and assumes it will be the final delay (i.e., it assumes the vehicle will neither accumulate further delay nor recover time).
+
+**Evaluation:**
+
+The models were compared based on the following metrics:
+* **MAE** (Mean Absolute Error)
+* **RMSE** (Root Mean Square Error)
+* **MedAE** (Median Absolute Error)
+* **Max Error**
+* **Accuracy percentages** within specific thresholds (+/- 1, 3, and 5 minutes).
+
+> **IMPORTANT:** When I refer to TEST data in the final step, it is strictly unseen data, separate from the train/test split used during model training.
 
 ### Extra Credit Justification
 
-[If you selected "Yes" for Aiming for +1 Mark, describe here which specific part of your work (e.g., innovative model architecture, extensive experimentation, exceptional performance) you believe deserves an extra mark.]
+No
 
-### Docker Instructions
+---
+
+## Docker Instructions
 
 This project is containerized using Docker. Follow the instructions below to build and run the solution.
-[Adjust the commands that show how do build your container and run it with log output.]
 
-#### Build
+### 1. Build
 
 Run the following command in the root directory of the repository to build the Docker image:
 
@@ -103,19 +66,31 @@ docker build -t dl-project .
 
 #### Run
 
-To run the solution, use the following command. You must mount your local data directory to `/app/data` inside the container.
+To run the solution, use the following command. 
+* Linux:
+    ```bash
+    bash ./run.sh
+    ```
 
-**To capture the logs for submission (required), redirect the output to a file:**
+* Windows:
+    ```bash
+    .\run.ps1
+    ```
+* If it doesn't work:
+* Windows:
+    ```bash
+    New-Item -ItemType Directory -Force -Path "log" | Out-Null; docker run -v ${PWD}/data:/app/data -v ${PWD}/log:/app/log --memory="12g" --memory-swap="-1" dl-project > ".\log\run.log" 2>&1
+    ```
+* Linux:
+    ```bash
+    mkdir -p log && docker run -v "$(pwd)/data":/app/data -v "$(pwd)/log":/app/log --memory="12g" --memory-swap="-1" dl-project > log/run.log 2>&1
+    ```
 
-```bash
-docker run -v /absolute/path/to/your/local/data:/app/data dl-project > log/run.log 2>&1
-```
+If somehow the download doesn't starts:
+You must mount your local data directory to `/app/data` inside the container.
+You can download everything form here: https://drive.google.com/drive/folders/1IbiDXxosOCT7EUgTW1VLhrIkD46nzfpi?usp=drive_link
 
-*   Replace `/absolute/path/to/your/local/data` with the actual path to your dataset on your host machine that meets the [Data preparation requirements](#data-preparation).
-*   The `> log/run.log 2>&1` part ensures that all output (standard output and errors) is saved to `log/run.log`.
-*   The container is configured to run every step (data preprocessing, training, evaluation, inference).
-
-
+---
 ### File Structure and Functions
 
 [Update according to the final file structure.]
@@ -123,16 +98,18 @@ docker run -v /absolute/path/to/your/local/data:/app/data dl-project > log/run.l
 The repository is structured as follows:
 
 - **`src/`**: Contains the source code for the machine learning pipeline.
+    - `00-download.py`: Downloads the CSV from Google Drive
     - `01-data-preprocessing.py`: Scripts for loading, cleaning, and preprocessing the raw data.
-    - `02-training.py`: The main script for defining the model and executing the training loop.
-    - `03-evaluation.py`: Scripts for evaluating the trained model on test data and generating metrics.
-    - `04-inference.py`: Script for running the model on new, unseen data to generate predictions.
+    - `02-training.py`: The main script for defining the model and executing the training loop and evaluates it on test.
+    - `03-evaluation.py`: Scripts for evaluating the trained model on unseen data and generating metrics.
     - `config.py`: Configuration file containing hyperparameters (e.g., epochs) and paths.
     - `utils.py`: Helper functions and utilities used across different scripts.
 
 - **`notebook/`**: Contains Jupyter notebooks for analysis and experimentation.
-    - `01-data-exploration.ipynb`: Notebook for initial exploratory data analysis (EDA) and visualization.
-    - `02-label-analysis.ipynb`: Notebook for analyzing the distribution and properties of the target labels.
+    - `Calculate_delays.ipynb`: Notebook for calculating the delays and checks the validity. The raw data uploaded comes from this.
+    - `Data_exploration.ipynb`: Notebook for Cleaning and exploring the data.
+    - `Baseline.ipynb`: Notebook for the basline models
+    - `GNN.ipynb`: Notebook for creating the GNN
 
 - **`log/`**: Contains log files.
     - `run.log`: Example log file showing the output of a successful training run.
@@ -141,3 +118,6 @@ The repository is structured as follows:
     - `Dockerfile`: Configuration file for building the Docker image with the necessary environment and dependencies.
     - `requirements.txt`: List of Python dependencies required for the project.
     - `README.md`: Project documentation and instructions.
+    - `run.sh`: Run file for Linux
+    - `run.ps1`: Run file for Windows
+
