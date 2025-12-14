@@ -18,7 +18,7 @@ I have created a configuration file (`src/config.py`) that allows for the fine-t
 
 * **DAYS_TO_TRAIN**: The number of days to be used for training data (out of the available 16).
 * **LOW_MEMORY switch**: If set to `True`, the program limits loaded data to 4,000,000 rows, saving significant resources and time.
-    * *IMPORTANT:* If `True`, the model will train on 5 days and test on 1 day.
+    * *IMPORTANT:* If `True`, the model will train on 5 days and test on 1 day. The running time is incredibly slow with all the data. I recommend this switch for review
 * **EPOCHS**: The number of training epochs.
 * **BATCH_SIZE**: The size of the batches.
 * **LEARNING_RATE**: Allows adjustment of the learning rate.
@@ -124,6 +124,7 @@ The repository is structured as follows:
     - `README.md`: Project documentation and instructions.
     - `run.sh`: Run file for Linux
     - `run.ps1`: Run file for Windows
+
 
 
 
