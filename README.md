@@ -56,7 +56,6 @@ The models were compared based on the following metrics:
 
 No
 
----
 
 ## Docker Instructions
 
@@ -96,7 +95,7 @@ If somehow the download doesn't starts:
 You must mount your local data directory to `/app/data` inside the container.
 You can download everything form here: https://drive.google.com/drive/folders/1IbiDXxosOCT7EUgTW1VLhrIkD46nzfpi?usp=drive_link
 
----
+
 ### File Structure and Functions
 
 The repository is structured as follows:
@@ -124,6 +123,7 @@ The repository is structured as follows:
     - `README.md`: Project documentation and instructions.
     - `run.sh`: Run file for Linux
     - `run.ps1`: Run file for Windows
+
 
 
 
