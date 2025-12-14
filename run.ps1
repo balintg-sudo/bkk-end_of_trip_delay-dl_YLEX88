@@ -5,8 +5,7 @@ Write-Host "Work directory: $WorkDir"
 
 # Ellenőrizzük, hogy létezik-e a 'data' mappa
 if (-not (Test-Path "$WorkDir\data")) {
-    Write-Host "ERROR: can't find 'data' directory in $WorkDir" -ForegroundColor Red
-    exit 1
+    New-Item -ItemType Directory -Force -Path "$WorkDir\data" | Out-Null
 }
 
 if (-not (Test-Path "$WorkDir\log")) {

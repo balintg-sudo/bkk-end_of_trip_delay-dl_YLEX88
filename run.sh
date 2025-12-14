@@ -6,8 +6,7 @@ echo "--- Starting project ---"
 echo "Work directory: $WORK_DIR"
 
 if [ ! -d "$WORK_DIR/data" ]; then
-    echo "ERROR: can't find 'data' directory in $WORK_DIR"
-    exit 1
+    mkdir -p "$WORK_DIR/data"
 fi
 
 if [ ! -d "$WORK_DIR/log" ]; then
@@ -17,7 +16,7 @@ fi
 echo "Running docker container..."
 docker run \
     --memory="8g" \
-    --memory-swap="16g" \
+    --memory-swap="-1" \
     -v "$WORK_DIR/data":/app/data \
     -v "$WORK_DIR/log":/app/log \
     dl-project > "$WORK_DIR/log/run.log" 2>&1
