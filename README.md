@@ -99,8 +99,6 @@ You can download everything form here: https://drive.google.com/drive/folders/1I
 ---
 ### File Structure and Functions
 
-[Update according to the final file structure.]
-
 The repository is structured as follows:
 
 - **`src/`**: Contains the source code for the machine learning pipeline.
@@ -126,5 +124,6 @@ The repository is structured as follows:
     - `README.md`: Project documentation and instructions.
     - `run.sh`: Run file for Linux
     - `run.ps1`: Run file for Windows
+
 
 
